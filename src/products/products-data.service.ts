@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Product } from './interfaces/product.interface';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { ExternalProductDto } from './dto/external-product.dto';
-import { dateToArray } from 'src/utils/date.helper';
+import { ExternalProductDTO } from './dto/external-product.dto';
+import { dateToArray } from '../shared/helper/date.helper';
 
 @Injectable()
 export class ProductsDataService {
   private products: Array<Product> = [];
 
-  addProduct(_item_: CreateProductDTO): ExternalProductDto {
+  addProduct(_item_: CreateProductDTO): ExternalProductDTO {
     const product: Product = {
       ..._item_,
       id: uuidv4(),
@@ -28,7 +28,7 @@ export class ProductsDataService {
     this.products = this.products.filter((i) => i.id !== id);
   }
 
-  updateProduct(id: string, dto: UpdateProductDto): Product {
+  updateProduct(id: string, dto: CreateProductDTO): Product {
     const product = this.getProductById(id);
     const index = this.products.findIndex((item) => item.id === id);
     this.products[index] = { ...product, ...dto, updatedAt: new Date() };
