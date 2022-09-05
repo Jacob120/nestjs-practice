@@ -51,6 +51,6 @@ export class UsersController {
   }
 
   mapUserToExternal(user: User): ExternalUserDTO {
-    return { ...user, dateOfBirth: dateToArray(user.dateOfBirth) };
+    return { ...user };
   }
 }

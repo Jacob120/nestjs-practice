@@ -5,7 +5,7 @@ export interface ExternalUserDTO {
   firstName: string;
   lastName: string;
   email: string;
-  dateOfBirth: Array<number>;
+  dateOfBirth: Date;
   address?: Array<ExternalUserAddress>;
   role: Array<Roles>;
 }
