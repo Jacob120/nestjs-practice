@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   Body,
   Controller,
@@ -10,7 +11,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { RoleGuard } from 'src/shared/guards/role.guard';
+import { RoleGuard } from '../shared/guards/role.guard';
 import { dateToArray } from '../shared/helper/date.helper';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { ExternalProductDTO } from './dto/external-product.dto';

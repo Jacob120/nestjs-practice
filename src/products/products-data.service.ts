@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Injectable } from '@nestjs/common';
 import { Product } from './interfaces/product.interface';
 import { CreateProductDTO } from './dto/create-product.dto';

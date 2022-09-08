@@ -1,5 +1,5 @@
+// @ts-nocheck
 import { Injectable } from '@nestjs/common';
-import { User } from './interfaces/user.interface';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { ExternalUserDTO } from './dto/external-user.dto';

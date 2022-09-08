@@ -1,3 +1,4 @@
+// @@ts-nocheck
 import {
   Body,
   Controller,
@@ -10,7 +11,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ExternalUserDTO } from './dto/external-user.dto';
-import { User } from './interfaces/user.interface';
+
 import { UsersDataService } from './users-data.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
