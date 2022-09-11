@@ -6,15 +6,12 @@ import { UserRepository } from './db/user.repository';
 import { UserAddressRepository } from './db/user-address.repository';
 import { User } from './db/users.entity';
 import { UserAddress } from './db/users-addresses.entity';
-import { Role } from './db/role.entity';
-import { RoleRepository } from './db/role.repository';
 
 @Injectable()
 export class UsersDataService {
   constructor(
     private userRepository: UserRepository,
     private userAddressRepository: UserAddressRepository,
-    private roleRepository: RoleRepository,
   ) {}
 
   private users: Array<User> = [];
