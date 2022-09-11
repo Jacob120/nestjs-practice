@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDTO } from './dto/create-product.dto';
-import { v4 as uuidv4 } from 'uuid';
-import { ExternalProductDTO } from './dto/external-product.dto';
-import { dateToArray } from '../shared/helper/date.helper';
 import { ProductRepository } from './db/product.repository';
 import { TagRepository } from './db/tag.repository';
 import { Product } from './db/products.entity';
 import { Tag } from './db/tag.entity';
-import { DeleteResult } from 'typeorm';
+
 import { UpdateProductDTO } from './dto/update-product.dto';
 
 @Injectable()
@@ -16,8 +13,6 @@ export class ProductsDataService {
     private productRepository: ProductRepository,
     private tagRepository: TagRepository,
   ) {}
-
-  private products: Array<Product> = [];
 
   async addProduct(item: CreateProductDTO): Promise<Product> {
     const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);

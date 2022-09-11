@@ -1,11 +1,14 @@
-import { Roles } from '../../shared/enums/roles.enum';
+import { Roles } from 'src/shared/enums/roles.enum';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Role } from './role.entity';
 import { UserAddress } from './users-addresses.entity';
 
 @Entity({
@@ -30,7 +33,7 @@ export class User {
   @Column('enum', {
     enum: Roles,
   })
-  role: Roles;
+  role: Roles[];
 
   @OneToMany((type) => UserAddress, (address) => address.user)
   address?: UserAddress[];
