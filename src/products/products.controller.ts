@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   Body,
   Controller,
@@ -16,7 +15,6 @@ import { dateToArray } from '../shared/helper/date.helper';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { ExternalProductDTO } from './dto/external-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
-import { Product } from './interfaces/product.interface';
 import { ProductsDataService } from './products-data.service';
 
 @Controller('products')
@@ -36,10 +34,14 @@ export class ProductsController {
       .map(this.mapProductToExternal);
   }
 
-  @Post()
   @UseGuards(RoleGuard)
-  addProduct(@Body() item: CreateProductDTO): ExternalProductDTO {
-    return this.productRepository.addProduct(item);
+  @Post()
+  async addProduct(
+    @Body() item: CreateProductDTO,
+  ): Promise<ExternalProductDTO> {
+    return this.mapProductToExternal(
+      await this.productService.addProduct(item),
+    );
   }
 
   @Put(':id')
@@ -63,6 +65,7 @@ export class ProductsController {
       ...product,
       createdAt: dateToArray(product.createdAt),
       updatedAt: dateToArray(product.updatedAt),
+      tags: product.tags?.map((i) => i.name),
     };
   }
 }
