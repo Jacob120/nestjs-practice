@@ -24,16 +24,16 @@ export class UsersDataService {
     if (checkEmail) {
       throw new UserRequireUniqueEmailException();
     }
-    const roles: Role[] = await this.roleRepository.findRolesByName(
-      _user_.role,
-    );
+    // const roles: Role[] = await this.roleRepository.findRolesByName(
+    //   _user_.role,
+    // );
     const userToSave = new User();
     userToSave.firstName = _user_.firstName;
     userToSave.lastName = _user_.lastName;
     userToSave.email = _user_.email;
     userToSave.dateOfBirth = _user_.dateOfBirth;
     userToSave.address = await this.prepareUserAddressesToSave(_user_.address);
-    userToSave.role = roles;
+    userToSave.role = _user_.role;
     return this.userRepository.save(userToSave);
   }
 
@@ -42,7 +42,7 @@ export class UsersDataService {
   }
 
   async updateUser(id: string, dto: UpdateUserDTO): Promise<User> {
-    const roles: Role[] = await this.roleRepository.findRolesByName(dto.role);
+    // const roles: Role[] = await this.roleRepository.findRolesByName(dto.role);
     const userToUpdate = await this.getUserById(id);
 
     userToUpdate.firstName = dto.firstName;
@@ -50,7 +50,7 @@ export class UsersDataService {
     userToUpdate.email = dto.email;
     userToUpdate.dateOfBirth = dto.dateOfBirth;
     userToUpdate.address = await this.prepareUserAddressesToSave(dto.address);
-    userToUpdate.role = roles;
+    userToUpdate.role = dto.role;
 
     await this.userAddressRepository.deleteUserAddressesByUserId(id);
     await this.userRepository.save(userToUpdate);
