@@ -6,11 +6,12 @@ export = {
   password: 'czopek22',
   database: 'shop',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: false,
+  synchronize: true,
   dropSchema: false,
   migrationsRun: true,
   migrations: [__dirname + '/db/migrations/**/*{.ts,.js}'],
   cli: {
     migrationsDir: 'src/db/migrations',
   },
+  subscribers: [__dirname + '/db/subscribers/**/*{.ts,.js}'],
 };

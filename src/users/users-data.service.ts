@@ -6,12 +6,14 @@ import { UserRepository } from './db/user.repository';
 import { UserAddressRepository } from './db/user-address.repository';
 import { User } from './db/users.entity';
 import { UserAddress } from './db/users-addresses.entity';
+import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class UsersDataService {
   constructor(
     private userRepository: UserRepository,
     private userAddressRepository: UserAddressRepository,
+    private dataSource: DataSource,
   ) {}
 
   private users: Array<User> = [];
@@ -22,14 +24,19 @@ export class UsersDataService {
       throw new UserRequireUniqueEmailException();
     }
 
-    const userToSave = new User();
-    userToSave.firstName = _user_.firstName;
-    userToSave.lastName = _user_.lastName;
-    userToSave.email = _user_.email;
-    userToSave.dateOfBirth = _user_.dateOfBirth;
-    userToSave.address = await this.prepareUserAddressesToSave(_user_.address);
-    userToSave.role = _user_.role;
-    return this.userRepository.save(userToSave);
+    return this.dataSource.transaction(async (manager: EntityManager) => {
+      const userToSave = new User();
+      userToSave.firstName = _user_.firstName;
+      userToSave.lastName = _user_.lastName;
+      userToSave.email = _user_.email;
+      userToSave.dateOfBirth = _user_.dateOfBirth;
+      userToSave.address = await this.prepareUserAddressesToSave(
+        _user_.address,
+        manager.getCustomRepository(UserAddressRepository),
+      );
+      userToSave.role = _user_.role;
+      return await manager.getCustomRepository(UserRepository).save(userToSave);
+    });
   }
 
   async deleteUser(id: string): Promise<void> {
@@ -37,19 +44,26 @@ export class UsersDataService {
   }
 
   async updateUser(id: string, dto: UpdateUserDTO): Promise<User> {
-    const userToUpdate = await this.getUserById(id);
+    return this.dataSource.transaction(async (manager: EntityManager) => {
+      const userToUpdate = await this.getUserById(id);
 
-    userToUpdate.firstName = dto.firstName;
-    userToUpdate.lastName = dto.lastName;
-    userToUpdate.email = dto.email;
-    userToUpdate.dateOfBirth = dto.dateOfBirth;
-    userToUpdate.address = await this.prepareUserAddressesToSave(dto.address);
-    userToUpdate.role = dto.role;
+      userToUpdate.firstName = dto.firstName;
+      userToUpdate.lastName = dto.lastName;
+      userToUpdate.email = dto.email;
+      userToUpdate.dateOfBirth = dto.dateOfBirth;
+      userToUpdate.address = await this.prepareUserAddressesToSave(
+        dto.address,
+        manager.getCustomRepository(UserAddressRepository),
+      );
+      userToUpdate.role = dto.role;
 
-    await this.userAddressRepository.deleteUserAddressesByUserId(id);
-    await this.userRepository.save(userToUpdate);
+      await this.userAddressRepository.deleteUserAddressesByUserId(id);
+      await this.userRepository.save(userToUpdate);
 
-    return this.getUserById(id);
+      return await manager
+        .getCustomRepository(UserRepository)
+        .save(userToUpdate);
+    });
   }
 
   getUserById(id: string): Promise<User> {
@@ -66,6 +80,8 @@ export class UsersDataService {
 
   async prepareUserAddressesToSave(
     address: CreateUserAddressDTO[] | UpdateUserAddressDTO[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UserAddressRepository,
   ): Promise<UserAddress[]> {
     const addresses: UserAddress[] = [];
     for (const add of address) {
