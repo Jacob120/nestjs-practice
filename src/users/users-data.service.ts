@@ -17,13 +17,11 @@ export class UsersDataService {
   private users: Array<User> = [];
 
   async addUser(_user_: CreateUserDTO): Promise<User> {
-    const checkEmail = this.userRepository.getUserByEmail(_user_.email);
-    if (checkEmail) {
+    const checkEmail = await this.userRepository.getUserByEmail(_user_.email);
+    if (checkEmail.length) {
       throw new UserRequireUniqueEmailException();
     }
-    // const roles: Role[] = await this.roleRepository.findRolesByName(
-    //   _user_.role,
-    // );
+
     const userToSave = new User();
     userToSave.firstName = _user_.firstName;
     userToSave.lastName = _user_.lastName;
@@ -34,12 +32,11 @@ export class UsersDataService {
     return this.userRepository.save(userToSave);
   }
 
-  deleteUser(id: string): void {
-    this.users = this.users.filter((user) => user.id !== id);
+  async deleteUser(id: string): Promise<void> {
+    this.userRepository.delete(id);
   }
 
   async updateUser(id: string, dto: UpdateUserDTO): Promise<User> {
-    // const roles: Role[] = await this.roleRepository.findRolesByName(dto.role);
     const userToUpdate = await this.getUserById(id);
 
     userToUpdate.firstName = dto.firstName;
@@ -56,7 +53,11 @@ export class UsersDataService {
   }
 
   getUserById(id: string): Promise<User> {
-    return this.userRepository.findOneBy({ id });
+    return this.userRepository.findOne({ id });
+  }
+
+  async getUserByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ email });
   }
 
   getAllUsers(): Promise<User[]> {

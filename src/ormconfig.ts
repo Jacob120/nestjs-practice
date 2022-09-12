@@ -3,7 +3,7 @@ export = {
   host: 'localhost',
   port: 3306,
   username: 'root',
-  password: process.env.MYSQL_PASSWORD,
+  password: 'czopek22',
   database: 'shop',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,

@@ -43,7 +43,7 @@ export class ProductsDataService {
   }
 
   getProductById(id: string): Promise<Product> {
-    return this.productRepository.findOneBy({ id });
+    return this.productRepository.findOne(id);
   }
 
   getAllProducts(): Promise<Product[]> {
