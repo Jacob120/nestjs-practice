@@ -12,12 +12,11 @@ import {
 } from '@nestjs/common';
 import { RoleGuard } from '../shared/guards/role.guard';
 import { dateToArray } from '../shared/helper/date.helper';
-import { Product } from './db/products.entity';
 import { CreateProductDTO } from './dto/create-product.dto';
 import { ExternalProductDTO } from './dto/external-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
-
+import { Product } from './db/products.entity';
 @Controller('products')
 export class ProductsController {
   constructor(private productRepository: ProductsDataService) {}
@@ -31,10 +30,9 @@ export class ProductsController {
     );
   }
 
-  @Get() async getAllProducts(): Promise<Array<ExternalProductDTO>> {
-    return (await this.productRepository.getAllProducts()).map(
-      this.mapProductToExternal,
-    );
+  @Get() async getAllProducts(): Promise<ExternalProductDTO[]> {
+    const products = await this.productRepository.getAllProducts();
+    return products.map((i) => this.mapProductToExternal(i));
   }
 
   @UseGuards(RoleGuard)
@@ -49,16 +47,15 @@ export class ProductsController {
   @Put(':id')
   async updateProduct(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() dto: UpdateProductDTO,
+    @Body() item: UpdateProductDTO,
   ): Promise<ExternalProductDTO> {
-    return this.mapProductToExternal(
-      await this.productRepository.updateProduct(id, dto),
-    );
+    const product = await this.productRepository.updateProduct(id, item);
+    return this.mapProductToExternal(product);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async deleteProduct(@Param('id') id: string): Promise<void> {
+  async deleteProduct(id: string): Promise<ExternalProductDTO> {
     await this.productRepository.deleteProduct(id);
     return null;
   }
@@ -68,7 +65,7 @@ export class ProductsController {
       ...product,
       createdAt: dateToArray(product.createdAt),
       updatedAt: dateToArray(product.updatedAt),
-      tags: product.tags?.map((i) => i.name),
+      tags: product.tags.map((i) => i.name),
     };
   }
 }
