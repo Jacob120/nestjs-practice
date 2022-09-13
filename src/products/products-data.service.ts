@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDTO } from './dto/create-product.dto';
-import { ProductRepository } from './db/product.repository';
 import { TagRepository } from './db/tag.repository';
 import { Product } from './db/products.entity';
 import { Tag } from './db/tag.entity';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { EntityManager } from 'typeorm';
 import { Connection } from 'typeorm';
+import { ProductRepository } from './db/product.repository';
 
 @Injectable()
 export class ProductsDataService {

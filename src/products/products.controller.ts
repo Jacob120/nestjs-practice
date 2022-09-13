@@ -20,7 +20,6 @@ import { ProductsDataService } from './products-data.service';
 
 @Controller('products')
 export class ProductsController {
-  productService: any;
   constructor(private productRepository: ProductsDataService) {}
 
   @Get(':id')
@@ -43,9 +42,8 @@ export class ProductsController {
   async addProduct(
     @Body() item: CreateProductDTO,
   ): Promise<ExternalProductDTO> {
-    return this.mapProductToExternal(
-      await this.productService.addProduct(item),
-    );
+    const product = await this.productRepository.addProduct(item);
+    return this.mapProductToExternal(product);
   }
 
   @Put(':id')
@@ -61,7 +59,8 @@ export class ProductsController {
   @Delete(':id')
   @HttpCode(204)
   async deleteProduct(@Param('id') id: string): Promise<void> {
-    return await this.productRepository.deleteProduct(id);
+    await this.productRepository.deleteProduct(id);
+    return null;
   }
 
   mapProductToExternal(product: Product): ExternalProductDTO {

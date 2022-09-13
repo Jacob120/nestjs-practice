@@ -1,7 +1,6 @@
 import { MigrationInterface, QueryRunner, getRepository } from 'typeorm';
 import { Tag } from '../../products/db/tag.entity';
 import { faker } from '@faker-js/faker';
-import { User } from '../../users/db/users.entity';
 
 export class InitData1663083087528 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

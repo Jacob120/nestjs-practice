@@ -37,7 +37,7 @@ export class Product {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @ManyToMany((type) => Tag)
+  @ManyToMany(() => Tag)
   @JoinTable({
     name: 'products_tags',
     joinColumn: {
