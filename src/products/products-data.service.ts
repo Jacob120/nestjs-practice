@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDTO } from './dto/create-product.dto';
+import { ProductRepository } from './db/product.repository';
 import { TagRepository } from './db/tag.repository';
 import { Product } from './db/products.entity';
 import { Tag } from './db/tag.entity';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { EntityManager } from 'typeorm';
 import { Connection } from 'typeorm';
-import { ProductRepository } from './db/product.repository';
 
 @Injectable()
 export class ProductsDataService {
@@ -16,6 +16,8 @@ export class ProductsDataService {
     private connection: Connection,
   ) {}
 
+  private products: Array<Product> = [];
+
   async addProduct(item: CreateProductDTO): Promise<Product> {
     return this.connection.transaction(async (manager: EntityManager) => {
       const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
@@ -24,8 +26,8 @@ export class ProductsDataService {
 
       productToSave.name = item.name;
       productToSave.price = item.price;
-      productToSave.count = item.count;
       productToSave.tags = tags;
+      productToSave.count = item.count;
 
       return await manager
         .getCustomRepository(ProductRepository)
@@ -34,17 +36,18 @@ export class ProductsDataService {
   }
 
   async deleteProduct(id: string): Promise<void> {
-    await this.productRepository.deleteById(id);
+    this.productRepository.delete(id);
   }
 
   async updateProduct(id: string, item: UpdateProductDTO): Promise<Product> {
     return this.connection.transaction(async (manager: EntityManager) => {
       const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
-      const productToUpdate = await this.getProductById(id);
+      const productToUpdate = await manager
+        .getCustomRepository(ProductRepository)
+        .findOne(id);
 
       productToUpdate.name = item.name;
       productToUpdate.price = item.price;
-      productToUpdate.count = item.count;
       productToUpdate.tags = tags;
 
       return await manager
