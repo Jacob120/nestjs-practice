@@ -7,6 +7,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+
 import { Tag } from './tag.entity';
 
 @Entity({

@@ -7,8 +7,8 @@ export = {
   database: 'shop',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: true,
-  dropSchema: false,
-  migrationsRun: true,
+  dropSchema: true,
+  migrationsRun: false,
   migrations: [__dirname + '/db/migrations/**/*{.ts,.js}'],
   cli: {
     migrationsDir: 'src/db/migrations',

@@ -4,26 +4,29 @@ import { ProductRepository } from './db/product.repository';
 import { TagRepository } from './db/tag.repository';
 import { Product } from './db/products.entity';
 import { Tag } from './db/tag.entity';
-
 import { UpdateProductDTO } from './dto/update-product.dto';
-import { DataSource, EntityManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class ProductsDataService {
   constructor(
     private productRepository: ProductRepository,
     private tagRepository: TagRepository,
-    private dataSource: DataSource,
+    private connection: Connection,
   ) {}
 
   async addProduct(item: CreateProductDTO): Promise<Product> {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    return this.connection.transaction(async (manager: EntityManager) => {
       const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
+
       const productToSave = new Product();
+
       productToSave.name = item.name;
       productToSave.price = item.price;
       productToSave.count = item.count;
       productToSave.tags = tags;
+
       return await manager
         .getCustomRepository(ProductRepository)
         .save(productToSave);
@@ -35,7 +38,7 @@ export class ProductsDataService {
   }
 
   async updateProduct(id: string, item: UpdateProductDTO): Promise<Product> {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    return this.connection.transaction(async (manager: EntityManager) => {
       const tags: Tag[] = await this.tagRepository.findTagsByName(item.tags);
       const productToUpdate = await this.getProductById(id);
 

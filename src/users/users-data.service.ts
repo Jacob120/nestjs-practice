@@ -6,14 +6,15 @@ import { UserRepository } from './db/user.repository';
 import { UserAddressRepository } from './db/user-address.repository';
 import { User } from './db/users.entity';
 import { UserAddress } from './db/users-addresses.entity';
-import { DataSource, EntityManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class UsersDataService {
   constructor(
     private userRepository: UserRepository,
     private userAddressRepository: UserAddressRepository,
-    private dataSource: DataSource,
+    private connection: Connection,
   ) {}
 
   private users: Array<User> = [];
@@ -24,7 +25,7 @@ export class UsersDataService {
       throw new UserRequireUniqueEmailException();
     }
 
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    return this.connection.transaction(async (manager: EntityManager) => {
       const userToSave = new User();
       userToSave.firstName = _user_.firstName;
       userToSave.lastName = _user_.lastName;
@@ -44,7 +45,7 @@ export class UsersDataService {
   }
 
   async updateUser(id: string, dto: UpdateUserDTO): Promise<User> {
-    return this.dataSource.transaction(async (manager: EntityManager) => {
+    return this.connection.transaction(async (manager: EntityManager) => {
       const userToUpdate = await this.getUserById(id);
 
       userToUpdate.firstName = dto.firstName;
