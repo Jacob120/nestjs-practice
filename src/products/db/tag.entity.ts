@@ -1,12 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({
-  name: 'tags',
-})
+@Entity({ name: 'tags' })
 export class Tag {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   name: string;
 }

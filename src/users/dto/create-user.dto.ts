@@ -1,13 +1,8 @@
-import { Roles } from '../../shared/enums/roles.enum';
+import { Roles } from '../enums/roles.enum';
 import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  ValidateNested,
-  IsNumber,
-  IsEnum,
-} from 'class-validator';
-import { UserAddress } from '../db/users-addresses.entity';
+import { IsEmail, IsNotEmpty, IsNumber, IsEnum } from 'class-validator';
+import { UserAddress } from '../db/userAddress.entity';
+import { OneToMany } from 'typeorm';
 
 export class CreateUserDTO {
   @IsNotEmpty()
@@ -18,13 +13,9 @@ export class CreateUserDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
   dateOfBirth: Date;
-
-  @ValidateNested({ each: true })
-  @Type(() => CreateUserAddressDTO)
-  address?: Array<UserAddress>;
-
+  @OneToMany((type) => UserAddress, (address) => address.user)
+  address: UserAddress[];
   @IsEnum(Roles)
   role: Roles[];
 }
@@ -38,5 +29,8 @@ export class CreateUserAddressDTO {
   street: string;
   @IsNotEmpty()
   @IsNumber()
-  number: number;
+  house: number;
+  @IsNotEmpty()
+  @IsNumber()
+  apartment: number;
 }

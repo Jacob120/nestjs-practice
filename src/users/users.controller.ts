@@ -1,23 +1,56 @@
 import {
-  Body,
-  Controller,
+  Post,
   Delete,
+  Put,
   Get,
-  HttpCode,
+  Body,
   Param,
   ParseUUIDPipe,
-  Post,
-  Put,
+  Controller,
 } from '@nestjs/common';
-import { ExternalUserDTO } from './dto/external-user.dto';
-import { UsersDataService } from './users-data.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import { ExternalUserDTO } from './dto/external-user.dto';
 import { User } from './db/users.entity';
+import { UsersDataService } from './users-data.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private userRepository: UsersDataService) {}
+
+  @Post()
+  async addUser(@Body() _item_: CreateUserDTO): Promise<ExternalUserDTO> {
+    return this.mapUserToExternal(await this.userRepository.addUser(_item_));
+  }
+
+  private mapUserToExternal(user: User): ExternalUserDTO {
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      address: user.address,
+      dateOfBirth: user.dateOfBirth,
+      role: user.role,
+    };
+  }
+
+  @Delete(':id')
+  async deleteUser(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<void> {
+    return this.userRepository.deleteUser(id);
+  }
+
+  @Put(':id')
+  async updateUser(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() _item_: UpdateUserDTO,
+  ): Promise<ExternalUserDTO> {
+    return this.mapUserToExternal(
+      await this.userRepository.updateUser(id, _item_),
+    );
+  }
 
   @Get(':id')
   async getUserById(
@@ -26,34 +59,9 @@ export class UsersController {
     return this.mapUserToExternal(await this.userRepository.getUserById(id));
   }
 
-  @Get() async getAllUsers(): Promise<Array<ExternalUserDTO>> {
-    return (await this.userRepository.getAllUsers()).map(
-      this.mapUserToExternal,
+  @Get() async getAllUsers(): Promise<ExternalUserDTO[]> {
+    return (await this.userRepository.getAllUsers()).map((i) =>
+      this.mapUserToExternal(i),
     );
-  }
-
-  @Post()
-  async addUser(@Body() user: CreateUserDTO): Promise<ExternalUserDTO> {
-    return this.mapUserToExternal(await this.userRepository.addUser(user));
-  }
-
-  @Put(':id')
-  async updateUser(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() dto: UpdateUserDTO,
-  ): Promise<ExternalUserDTO> {
-    return this.mapUserToExternal(
-      await this.userRepository.updateUser(id, dto),
-    );
-  }
-
-  @Delete(':id')
-  @HttpCode(204)
-  async deleteUser(@Param('id') user: string): Promise<void> {
-    return this.userRepository.deleteUser(user);
-  }
-
-  mapUserToExternal(user: User): ExternalUserDTO {
-    return { ...user, role: user.role?.map((i) => i) };
   }
 }

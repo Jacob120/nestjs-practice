@@ -1,37 +1,44 @@
-import { Roles } from '../../shared/enums/roles.enum';
 import {
+  Entity,
+  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  Entity,
   OneToMany,
-  PrimaryGeneratedColumn,
+  JoinTable,
 } from 'typeorm';
-import { UserAddress } from './users-addresses.entity';
+import { JoinAttribute } from 'typeorm/query-builder/JoinAttribute';
 
-@Entity({
-  name: 'users',
-})
+import { Roles } from '../enums/roles.enum';
+import { UserAddress } from './userAddress.entity';
+
+@Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   firstName: string;
-
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   lastName: string;
-
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   email: string;
-
   @CreateDateColumn({ type: 'timestamp' })
   dateOfBirth: Date;
+  @OneToMany((type) => UserAddress, (address) => address.user)
+  @JoinTable({
+    name: 'users_addresses',
+    joinColumn: {
+      name: 'user',
+    },
+    inverseJoinColumn: {
+      name: 'addressId',
+    },
+  })
+  address: UserAddress[];
 
+  @Column({ length: 100 })
   @Column('enum', {
     enum: Roles,
   })
   role: Roles[];
-
-  @OneToMany((type) => UserAddress, (address) => address.user)
-  address?: UserAddress[];
 }

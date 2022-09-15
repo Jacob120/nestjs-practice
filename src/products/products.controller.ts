@@ -11,9 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { RoleGuard } from '../shared/guards/role.guard';
-import { dateToArray } from '../shared/helper/date.helper';
+import { dateToArray } from '../shared/helpers/date.helper';
 import { CreateProductDTO } from './dto/create-product.dto';
-import { ExternalProductDTO } from './dto/external-product.dto';
+import { ExternalProductDto } from './dto/external-product.dto';
 import { UpdateProductDTO } from './dto/update-product.dto';
 import { ProductsDataService } from './products-data.service';
 import { Product } from './db/products.entity';
@@ -24,13 +24,13 @@ export class ProductsController {
   @Get(':id')
   async getProductById(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Promise<ExternalProductDTO> {
+  ): Promise<ExternalProductDto> {
     return this.mapProductToExternal(
       await this.productRepository.getProductById(id),
     );
   }
 
-  @Get() async getAllProducts(): Promise<ExternalProductDTO[]> {
+  @Get() async getAllProducts(): Promise<ExternalProductDto[]> {
     const products = await this.productRepository.getAllProducts();
     return products.map((i) => this.mapProductToExternal(i));
   }
@@ -39,7 +39,7 @@ export class ProductsController {
   @Post()
   async addProduct(
     @Body() item: CreateProductDTO,
-  ): Promise<ExternalProductDTO> {
+  ): Promise<ExternalProductDto> {
     const product = await this.productRepository.addProduct(item);
     return this.mapProductToExternal(product);
   }
@@ -48,19 +48,19 @@ export class ProductsController {
   async updateProduct(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() item: UpdateProductDTO,
-  ): Promise<ExternalProductDTO> {
+  ): Promise<ExternalProductDto> {
     const product = await this.productRepository.updateProduct(id, item);
     return this.mapProductToExternal(product);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async deleteProduct(id: string): Promise<ExternalProductDTO> {
+  async deleteProduct(id: string): Promise<ExternalProductDto> {
     await this.productRepository.deleteProduct(id);
     return null;
   }
 
-  mapProductToExternal(product: Product): ExternalProductDTO {
+  mapProductToExternal(product: Product): ExternalProductDto {
     return {
       ...product,
       createdAt: dateToArray(product.createdAt),

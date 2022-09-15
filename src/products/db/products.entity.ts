@@ -4,15 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToMany,
   JoinTable,
 } from 'typeorm';
 
 import { Tag } from './tag.entity';
 
-@Entity({
-  name: 'products',
-})
+@Entity({ name: 'products' })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -20,24 +17,12 @@ export class Product {
   @Column({ length: 100 })
   name: string;
 
-  @Column({
-    default: 0,
-    type: 'float',
-  })
+  @Column({ default: 0, type: 'float' })
   price: number;
 
-  @Column({
-    default: 1,
-  })
+  @Column({ default: 1 })
   count: number;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
-
-  @ManyToMany(() => Tag)
   @JoinTable({
     name: 'products_tags',
     joinColumn: {
@@ -48,6 +33,12 @@ export class Product {
     },
   })
   tags: Tag[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
 
   @Column({ type: 'text', nullable: true })
   description: string;

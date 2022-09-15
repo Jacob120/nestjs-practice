@@ -11,15 +11,15 @@ export class ProductRepository extends Repository<Product> {
     });
   }
 
+  deleteById(id: string): Promise<DeleteResult> {
+    return this.delete({ id });
+  }
+
   getProductById(id: string[]): Promise<Product[]> {
     return this.find({
       where: {
         id: In(id),
       },
     });
-  }
-
-  deleteById(id: string): Promise<DeleteResult> {
-    return this.delete({ id });
   }
 }
