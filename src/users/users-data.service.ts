@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDTO, CreateUserAddressDTO } from './dto/create-user.dto';
-import { UpdateUserDTO, UpdateUserAddressDTO } from './dto/update-user.dto';
-import { v4 as uuidv4 } from 'uuid';
+import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserRequireUniqueEmailException } from './exception/user-require-unique-email-exception';
 import { UserRepository } from './db/user.repository';
 import { UserAddressRepository } from './db/userAddress.repository';
 import { User } from './db/users.entity';
 import { UserAddress } from './db/userAddress.entity';
-import { Logger } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { EntityManager } from 'typeorm';
+import { UsersQuery } from './queries/UsersQuery.interface';
 
 @Injectable()
 export class UsersDataService {
@@ -22,8 +21,9 @@ export class UsersDataService {
   private users: Array<User> = [];
 
   async addUser(user: CreateUserDTO): Promise<User> {
-    const checkEmail = await this.userRepository.getUserByEmail(user.email);
-    if (checkEmail.length) {
+    const checkEmail = await this.userRepository.findOne({ email: user.email });
+
+    if (checkEmail) {
       throw new UserRequireUniqueEmailException();
     }
 
@@ -80,8 +80,8 @@ export class UsersDataService {
     return this.userRepository.findOne(id);
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.userRepository.find();
+  async getAllUsers(query: UsersQuery): Promise<Array<User>> {
+    return this.userRepository.find(query);
   }
 
   async prepareUserAddressesToSave(

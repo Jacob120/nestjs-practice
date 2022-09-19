@@ -5,6 +5,7 @@ import { UserAddress } from '../../users/db/userAddress.entity';
 import { User } from '../../users/db/users.entity';
 import { Tag } from '../db/orderTag.entity';
 import { OrderedProducts } from '../db/orderedProducts.entity';
+
 export class CreateOrderDTO {
   @IsNotEmpty()
   @IsNumber()
@@ -26,4 +27,23 @@ export class CreateOrderDTO {
   user: User;
   @IsNotEmpty()
   orderItems: OrderedProducts[];
+}
+
+export class CreateOrderProductDto {
+  @IsNotEmpty()
+  @IsNumber()
+  quantity: number;
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+  @IsNotEmpty()
+  product: string;
+  @IsNotEmpty()
+  orderId: string;
 }
